@@ -22,6 +22,7 @@ function setUrlFromFiles(files: FileList | File) {
 }
 
 function onFileChange(files: FileList | File) {
+    console.log(files);
     setUrlFromFiles(files);
 }
 </script>
@@ -45,6 +46,8 @@ function onFileChange(files: FileList | File) {
     background-color: lightblue;
 }
 .file-upload {
+    max-width: 600px;
+    max-height: 600px;
     width: 50vw;
     height: 50vw;
     background-size: cover;
