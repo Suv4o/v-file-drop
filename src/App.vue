@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import vFileDrop from "./components/v-file-drop.vue";
+// import vFileDrop from "./components/v-file-drop.vue";
 import { ref } from "vue";
 
 const imageUrl = ref("");

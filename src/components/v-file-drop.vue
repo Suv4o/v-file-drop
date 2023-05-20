@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, Ref } from "vue";
+import { computed, ref, inject, Ref } from "vue";
 
-type MimeTypes =
+export type MimeTypes =
     | "audio/aac"
     | "application/x-abiword"
     | "application/x-freearc"
@@ -85,6 +85,9 @@ export interface Props {
     multiple?: boolean;
 }
 
+const injectedOptions = inject("VFileDropOptions") as Props;
+const { accept: injectedAccept, multiple: injectedMultiple } = injectedOptions;
+
 const props = withDefaults(defineProps<Props>(), {
     accept: () => [],
     multiple: false,
@@ -94,10 +97,24 @@ const emit = defineEmits<{
     (event: "change", files: FileList | File): void;
 }>();
 
+const accept = computed(() => {
+    if (injectedAccept) {
+        return injectedAccept;
+    }
+    return props.accept;
+});
+
+const multiple = computed(() => {
+    if (injectedMultiple) {
+        return injectedMultiple;
+    }
+    return props.multiple;
+});
+
 const files = ref() as Ref<FileList | File[]>;
 
 const returnFiles = computed(() => {
-    if (props.multiple) {
+    if (multiple.value) {
         return files.value as FileList;
     }
     return files.value[0] as File;
@@ -108,21 +125,24 @@ function emitChange() {
 }
 
 const acceptInputMimeTypes = computed(() => {
-    if (!props.accept.length) {
+    if (!accept.value.length) {
         return "";
     }
-    if (typeof props.accept === "string") {
-        return props.accept;
+    if (typeof accept.value === "string") {
+        return accept.value;
     }
-    return props.accept.join(",");
+    return accept.value.join(",");
 });
 
 function checkIfTypeMimeIsAllowedOnDrop(file: File) {
     const fileType = <MimeTypes>file.type;
-    if (typeof props.accept === "string") {
-        return fileType === props.accept;
+    if (!accept.value.length) {
+        return true;
     }
-    return props.accept.includes(fileType);
+    if (typeof accept.value === "string") {
+        return fileType === accept.value;
+    }
+    return accept.value.includes(fileType);
 }
 
 function onFileChange(event: Event) {
@@ -142,7 +162,7 @@ function onFileDrop(event: DragEvent) {
 
     files.value = [];
 
-    if (!props.multiple && (event.dataTransfer?.items?.length > 1 || event?.dataTransfer?.files?.length > 1)) {
+    if (!multiple.value && (event.dataTransfer?.items?.length > 1 || event?.dataTransfer?.files?.length > 1)) {
         console.warn(
             "Only one file is allowed. Please add the 'multiple' prop on the component to allow multiple files."
         );
@@ -192,7 +212,7 @@ function onDragover(event: DragEvent) {
             type="file"
             id="upload-file"
             :accept="acceptInputMimeTypes"
-            :multiple="props.multiple"
+            :multiple="multiple"
         />
         <div>
             <slot></slot>
