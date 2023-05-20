@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 
 type MimeTypes =
     | "audio/aac"
@@ -90,6 +90,10 @@ const props = withDefaults(defineProps<Props>(), {
     multiple: false,
 });
 
+const emit = defineEmits<{
+    (event: "change", files: FileList | File): void;
+}>();
+
 const files = ref() as Ref<FileList | File[]>;
 
 const returnFiles = computed(() => {
@@ -98,6 +102,10 @@ const returnFiles = computed(() => {
     }
     return files.value[0] as File;
 });
+
+function emitChange() {
+    emit("change", returnFiles.value);
+}
 
 const acceptInputMimeTypes = computed(() => {
     if (!props.accept.length) {
@@ -123,6 +131,7 @@ function onFileChange(event: Event) {
         return;
     }
     files.value = eventTarget.files;
+    emitChange();
 }
 
 function onFileDrop(event: DragEvent) {
@@ -167,6 +176,7 @@ function onFileDrop(event: DragEvent) {
             }
         }
     }
+    emitChange();
 }
 
 function onDragover(event: DragEvent) {

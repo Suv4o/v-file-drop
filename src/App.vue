@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import vFileDrop from "./components/v-file-drop.vue";
+
+function onFileChange(files: FileList | File) {
+    console.log(files);
+}
 </script>
 
 <template>
     <div>
-        <v-file-drop multiple accept="image/png">
+        <v-file-drop @change="onFileChange" multiple :accept="['image/png', 'image/jpeg']">
             <div class="file-upload"></div>
         </v-file-drop>
     </div>
