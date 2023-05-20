@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, Ref } from "vue";
 
 type MimeTypes =
     | "audio/aac"
@@ -81,7 +81,7 @@ type MimeTypes =
     | "application/x-7z-compressed";
 
 export interface Props {
-    accept?: MimeTypes[];
+    accept?: MimeTypes | MimeTypes[];
     multiple?: boolean;
 }
 
@@ -90,21 +90,32 @@ const props = withDefaults(defineProps<Props>(), {
     multiple: false,
 });
 
-const files = ref<Ref<FileList>>([]);
+const files = ref() as Ref<FileList | File[]>;
 
 const returnFiles = computed(() => {
     if (props.multiple) {
-        return files.value;
+        return files.value as FileList;
     }
-    return files.value[0];
+    return files.value[0] as File;
 });
 
 const acceptInputMimeTypes = computed(() => {
     if (!props.accept.length) {
         return "";
     }
+    if (typeof props.accept === "string") {
+        return props.accept;
+    }
     return props.accept.join(",");
 });
+
+function checkIfTypeMimeIsAllowedOnDrop(file: File) {
+    const fileType = <MimeTypes>file.type;
+    if (typeof props.accept === "string") {
+        return fileType === props.accept;
+    }
+    return props.accept.includes(fileType);
+}
 
 function onFileChange(event: Event) {
     const eventTarget = event.target as HTMLInputElement;
@@ -119,23 +130,42 @@ function onFileDrop(event: DragEvent) {
     if (!event.dataTransfer) {
         return;
     }
+
+    files.value = [];
+
     if (!props.multiple && (event.dataTransfer?.items?.length > 1 || event?.dataTransfer?.files?.length > 1)) {
-        console.info(
+        console.warn(
             "Only one file is allowed. Please add the 'multiple' prop on the component to allow multiple files."
         );
     }
 
     if (event.dataTransfer.items) {
-        [...event.dataTransfer.items].forEach((item) => {
+        for (const item of [...event.dataTransfer.items]) {
             if (item.kind === "file") {
                 const file = item.getAsFile();
+                if (file && !checkIfTypeMimeIsAllowedOnDrop(file)) {
+                    console.error(
+                        `The file ${file.name} is not allowed. Please add the '${file.type}' mime type to the 'accept' prop on the component.`
+                    );
+                    return;
+                }
+                if (file) {
+                    files.value.push(file);
+                }
+            }
+        }
+    } else {
+        for (const file of [...event.dataTransfer.files]) {
+            if (file && !checkIfTypeMimeIsAllowedOnDrop(file)) {
+                console.error(
+                    `The file ${file.name} is not allowed. Please add the '${file.type}' mime type to the 'accept' prop on the component.`
+                );
+                return;
+            }
+            if (file) {
                 files.value.push(file);
             }
-        });
-    } else {
-        [...event.dataTransfer.files].forEach((file) => {
-            files.value.push(file);
-        });
+        }
     }
 }
 

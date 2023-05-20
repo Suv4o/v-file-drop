@@ -4,7 +4,7 @@ import vFileDrop from "./components/v-file-drop.vue";
 
 <template>
     <div>
-        <v-file-drop multiple>
+        <v-file-drop multiple accept="image/png">
             <div class="file-upload"></div>
         </v-file-drop>
     </div>
