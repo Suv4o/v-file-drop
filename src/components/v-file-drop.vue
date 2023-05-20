@@ -119,6 +119,12 @@ function onFileDrop(event: DragEvent) {
     if (!event.dataTransfer) {
         return;
     }
+    if (!props.multiple && (event.dataTransfer?.items?.length > 1 || event?.dataTransfer?.files?.length > 1)) {
+        console.info(
+            "Only one file is allowed. Please add the 'multiple' prop on the component to allow multiple files."
+        );
+    }
+
     if (event.dataTransfer.items) {
         [...event.dataTransfer.items].forEach((item) => {
             if (item.kind === "file") {
