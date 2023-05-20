@@ -31,7 +31,7 @@ function onFileChange(files: FileList | File) {
     <div class="container">
         <v-file-drop @change="onFileChange" multiple :accept="['image/png', 'image/jpeg']">
             <div class="file-upload" :style="{ backgroundImage: `url('${imageUrl}')` }">
-                <template v-if="!imageUrl"> Drop your files here... </template>
+                <template v-if="!imageUrl">Drop your files here...</template>
             </div>
         </v-file-drop>
     </div>
