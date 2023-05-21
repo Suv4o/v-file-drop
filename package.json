@@ -1,6 +1,21 @@
 {
     "name": "v-file-drop",
     "version": "0.0.3",
+    "keywords": [
+        "vue",
+        "vue3",
+        "nuxt",
+        "nuxt 3",
+        "file",
+        "drop",
+        "drag",
+        "upload",
+        "file-upload",
+        "file-drop",
+        "file-drag",
+        "file-upload",
+        "simple-file-upload"
+    ],
     "type": "module",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
