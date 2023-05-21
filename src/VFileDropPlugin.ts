@@ -1,6 +1,6 @@
 import type { App } from "vue";
 import { VFileDrop } from "./components";
-import { MimeTypes } from "./components/v-file-drop.vue";
+import { MimeTypes } from "./components/index";
 
 export default {
     install: (app: App, options: { multiple?: boolean; accept?: MimeTypes | MimeTypes[] }) => {
