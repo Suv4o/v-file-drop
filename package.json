@@ -16,6 +16,10 @@
         "file-upload",
         "simple-file-upload"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Suv4o/v-file-drop"
+    },
     "type": "module",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
