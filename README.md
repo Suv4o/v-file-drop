@@ -5,7 +5,7 @@ This is a simple drag-and-drop file uploader for Vue 3. The purpose of this plug
 ## Install
 
 ```bash
-npm instrall v-file-drop
+npm install v-file-drop
 ```
 
 ## Use globally
